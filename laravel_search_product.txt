@@ -1,0 +1,45 @@
+Laravel advanced search Link very usefull
+=========================================
+https://m.dotdev.co/writing-advanced-eloquent-search-query-filters-de8b6c2598db
+
+
+
+<!--Search Form -->
+<div class="search">
+				<form action="{{ route('search.product') }}" method="POST">					
+					<div class="input-group">
+						<input type="text" name="search_product" class="form-control search-in" placeholder="type product name..">
+						<span class="input-group-btn">
+				  <button class="btn btn-Search" type="submit"><i class="fa fa-search"></i>
+				 <input type="hidden" name="_token" value="{{ csrf_token() }}">		  
+			    </button>
+			  </span>
+			</div>
+		  </form>
+	    </div>
+<!-- End-->
+
+<!--Route -->
+Route::post('products','FrontController@search_product')->name('search.product');
+<!--End -->
+
+<!-- Controller For search Option-->
+public function search_product(Request $request){
+        $categories=Category::all();    
+        $search=$request->search_product;
+        $products=DB::table('products')->where('name','like',"%$search%")->get();
+        return view('hs.product',compact('products','categories'));
+    }
+<!-- End Controller-->
+
+using when cluse search
+=======================
+StoreInvoice::with(['store', 'hub'])
+            ->when($request->store_id != null, function ($q) use ($request) {
+                $q->where('store_id', $request->store_id);
+            })->when($request->created_at != null, function ($q) use ($req_date) {
+                $q->where('created_at', 'LIKE', "%{$req_date}%");
+            })->when($request->hub_id != null, function ($q) use ($request) {
+                $q->where('hub_id', $request->hub_id);
+            })->selectRaw('count(*) as total, id,invoice_no,status,sum(amount) as total_amount,store_id,hub_id,created_at')
+            ->get();
